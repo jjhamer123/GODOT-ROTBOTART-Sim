@@ -1,0 +1,20 @@
+class_name URDFRigidBody3D
+extends RigidBody3D
+
+@export var link: URDFLink
+
+func update_link(
+		link: URDFLink,
+		robot_node: Node3D,
+		owner_node: Node3D,
+		options: Dictionary,
+		source_path: String) -> void:
+	self.link = link
+	URDFPhysicsBody3D.update_link(
+		self, link, robot_node, owner_node, options, source_path)
+	if link.inertial:
+		self.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+		self.center_of_mass = link.inertial.origin_xyz
+		if link.inertial.mass > 0.0:
+			var mass_scale: float = options.get("mass_scale", 1.0)
+			self.mass = link.inertial.mass * mass_scale

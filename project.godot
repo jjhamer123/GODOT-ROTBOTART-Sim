@@ -1,0 +1,39 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Mover6Simulation"
+run/main_scene="uid://df7u8lvb6nooj"
+config/features=PackedStringArray("4.4", "Mobile")
+config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/aspect="expand"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_urdf/plugin.cfg", "res://addons/stl-io/plugin.cfg", "res://addons/yaml_dot_gd/plugin.cfg")
+
+[physics]
+
+common/physics_ticks_per_second=480
+3d/physics_engine="Jolt Physics"
+jolt_physics_3d/simulation/velocity_steps=30
+jolt_physics_3d/simulation/position_steps=20
+jolt_physics_3d/simulation/baumgarte_stabilization_factor=1.0
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"
+renderer/rendering_method="mobile"

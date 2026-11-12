@@ -38,6 +38,8 @@ class_name RobotJointController
 ## Kinematic mode: a prismatic joint called support<N> whose robot also has links
 ## track<N>_L and track<N>_R (the Robot Art URDFs) is guided automatically,
 ## centred between those two tracks. Entries in Guided Slides win.
+## In physics mode the same tracks become real guides: each support bar can roll
+## along its rails but can't slide along its own length or turn, like the U-channels.
 @export var auto_track_guides: bool = true
 
 ## Position control (used by set_joint_angle): a P-controller drives the
@@ -63,6 +65,7 @@ var _kin_v: Dictionary[String, float] = {}       # kinematic mode joint velociti
 var _kin_order: Array[String] = []               # joints sorted parent -> child
 var _auto_guides_pending := true
 var _auto_guided: Array[String] = []
+var _rail_guides: Array[Node] = []     # physics-mode rail guide nodes this controller made
 
 func _ready() -> void:
 	await get_tree().physics_frame
@@ -82,9 +85,60 @@ func reinitialize() -> void:
 	apply_link_masses()
 	if disable_self_collision:
 		_disable_self_collision()
+	_remove_rail_guides()
 	if kinematic_mode:
 		_setup_kinematic()
+	elif auto_track_guides:
+		_add_rail_guides()
 	print("RobotJointController: ready, tracking ", _joints.size(), " joint(s): ", _joints.keys())
+
+# ---------------------------------------------------------------- rail guides (physics)
+
+## Physics mode: hold each support bar on its tracks (track<N>_L / track<N>_R),
+## like the real U-channels. The bar may move along the tracks; it can't slide
+## along its own length or turn about the vertical. Height and tilt are left to
+## the chain above (locking them twice makes Jolt bind).
+func _add_rail_guides() -> void:
+	for joint_name in _joints.keys():
+		var d: Dictionary = _joints[joint_name]
+		if d.get("type", "") != "prismatic" or not joint_name.begins_with("support"):
+			continue
+		var suffix: String = joint_name.substr("support".length())
+		var l = godot_robot.links.get("track%s_L" % suffix)
+		var r = godot_robot.links.get("track%s_R" % suffix)
+		var bar: RigidBody3D = d["body_b"]
+		if not (l is Node3D and r is Node3D) or bar == null:
+			continue
+		var centre: Vector3 = (l.global_position + r.global_position) * 0.5
+		var along: Vector3 = (d["node"] as Node3D).global_transform.basis.z.normalized()  # bar direction
+		# start with the bar centred between its tracks (it slides through the carriage)
+		bar.global_position += along * (centre - bar.global_position).dot(along)
+		var anchor := StaticBody3D.new()
+		anchor.name = "RailFrame_" + joint_name
+		godot_robot.add_child(anchor)
+		anchor.global_position = bar.global_position
+		var guide := Generic6DOFJoint3D.new()
+		guide.name = "RailGuide_" + joint_name
+		godot_robot.add_child(guide)
+		var up := godot_robot.global_transform.basis.y.normalized()
+		guide.global_transform = Transform3D(Basis(along, up, along.cross(up)), bar.global_position)
+		guide.node_a = guide.get_path_to(anchor)
+		guide.node_b = guide.get_path_to(bar)
+		guide.exclude_nodes_from_collision = true
+		guide.set_flag_y(Generic6DOFJoint3D.FLAG_ENABLE_LINEAR_LIMIT, false)    # height: from the chain
+		guide.set_flag_z(Generic6DOFJoint3D.FLAG_ENABLE_LINEAR_LIMIT, false)    # along the rails: free
+		guide.set_flag_x(Generic6DOFJoint3D.FLAG_ENABLE_ANGULAR_LIMIT, false)   # tilt: from the chain
+		guide.set_flag_z(Generic6DOFJoint3D.FLAG_ENABLE_ANGULAR_LIMIT, false)
+		# still locked: linear x (along the bar) and angular y (turning)
+		_rail_guides.append_array([anchor, guide])
+
+
+func _remove_rail_guides() -> void:
+	for n in _rail_guides:
+		if is_instance_valid(n):
+			n.queue_free()
+	_rail_guides.clear()
+
 
 func _setup() -> void:
 	for joint in godot_robot.urdf.joints:

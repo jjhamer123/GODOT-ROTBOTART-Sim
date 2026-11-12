@@ -31,7 +31,7 @@
 	<inertial><origin xyz="0.00009 -0.00000 -0.05783"/><mass value="0.2011"/><inertia ixx="9.6019e-05" ixy="-3.2819e-11" ixz="5.4181e-09" iyy="9.6824e-05" iyz="-4.1809e-09" izz="5.7848e-05"/></inertial>
   </link>
   <joint name="support1" type="prismatic">
-	<parent link="motor1"/><child link="support1_bar"/><origin xyz="0 0 0"/><axis xyz="1 0 0"/>
+	<parent link="motor1"/><child link="support1_bar"/><origin xyz="0.0 0 0"/><axis xyz="1 0 0"/>
 	<limit lower="-0.214" upper="0.214" effort="0" velocity="1.0"/><dynamics friction="0.5" damping="0.0"/>
   </joint>
   <link name="support1_bar">
@@ -94,8 +94,8 @@
 	<inertial><origin xyz="0.00009 -0.00000 -0.05783"/><mass value="0.2011"/><inertia ixx="9.6019e-05" ixy="-3.2819e-11" ixz="5.4181e-09" iyy="9.6824e-05" iyz="-4.1809e-09" izz="5.7848e-05"/></inertial>
   </link>
   <joint name="support2" type="prismatic">
-	<parent link="motor2"/><child link="support2_bar"/><origin xyz="0 0 0"/><axis xyz="1 0 0"/>
-	<limit lower="-0.214" upper="0.214" effort="0" velocity="1.0"/><dynamics friction="0.5" damping="0.0"/>
+	<parent link="motor2"/><child link="support2_bar"/><origin xyz="-0.07 0 0"/><axis xyz="1 0 0"/>
+	<limit lower="-0.144" upper="0.284" effort="0" velocity="1.0"/><dynamics friction="0.5" damping="0.0"/>
   </joint>
   <link name="support2_bar">
 	<visual><geometry><mesh filename="package://robot_art_layer/meshes/support.stl" scale="0.001 0.001 0.001"/></geometry><material name="steel"/></visual>
@@ -157,8 +157,8 @@
 	<inertial><origin xyz="0.00009 -0.00000 -0.05783"/><mass value="0.2011"/><inertia ixx="9.6019e-05" ixy="-3.2819e-11" ixz="5.4181e-09" iyy="9.6824e-05" iyz="-4.1809e-09" izz="5.7848e-05"/></inertial>
   </link>
   <joint name="support3" type="prismatic">
-	<parent link="motor3"/><child link="support3_bar"/><origin xyz="0 0 0"/><axis xyz="1 0 0"/>
-	<limit lower="-0.214" upper="0.214" effort="0" velocity="1.0"/><dynamics friction="0.5" damping="0.0"/>
+	<parent link="motor3"/><child link="support3_bar"/><origin xyz="-0.14 0 0"/><axis xyz="1 0 0"/>
+	<limit lower="-0.074" upper="0.354" effort="0" velocity="1.0"/><dynamics friction="0.5" damping="0.0"/>
   </joint>
   <link name="support3_bar">
 	<visual><geometry><mesh filename="package://robot_art_layer/meshes/support.stl" scale="0.001 0.001 0.001"/></geometry><material name="steel"/></visual>

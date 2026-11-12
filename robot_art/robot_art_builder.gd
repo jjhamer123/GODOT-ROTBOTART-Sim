@@ -7,11 +7,22 @@ extends Node
 ##
 ## Use: add this node to your scene, set Layers, point Arm Rig at your ImportRobot
 ## (and Joint Controller at your ArmController), then press "Build robot".
+##
+## Every layer is built on its rails: in the URDF's zero pose (all arms pointing
+## +X at Rest Radius) motor k sits (k-1) x Rest Radius from the centre, so its
+## support bar is placed that far back through the carriage, centred between the
+## rails. joint_offsets() tells the controller, so support<k> still reads the true
+## slide (bar centre - carriage centre), the same value as the ROS URDF.
 
 @export_range(1, 10) var layers: int = 3
 ## Length of every layer's guide rails (m), except the top layer's: its motor never
 ## moves, so it only gets a 30 mm stub. Each motor can travel +/-(length/2 - 8 mm) along them.
 @export_range(0.05, 2.0, 0.01, "suffix:m") var track_length: float = 0.5
+## Friction of the support bar sliding through the carriage (N). 0 = slides freely.
+## (In Godot it's a brake that only resists motion, up to this force.)
+@export_range(0.0, 5.0, 0.01, "suffix:N") var slide_friction: float = 0.5
+## Friction of each top bearing (N m). 0 = spins freely.
+@export_range(0.0, 0.1, 0.0001, "suffix:N m") var bearing_friction: float = 0.002
 ## Arm radius in the URDF's zero pose (m). Godot needs a real radius here (0.03..0.17).
 @export var rest_radius: float = 0.07
 ## Where the URDF is written. %d is replaced by the number of layers.
@@ -52,7 +63,15 @@ func build() -> void:
 	if f == null:
 		push_error("RobotArtBuilder: can't write %s (%s)" % [path, error_string(FileAccess.get_open_error())])
 		return
-	f.store_string(make_urdf(layers, rest_radius, track_length))
+	# get() + fallback: a node created before these settings existed has them as Nil
+	# until the scene is reloaded, so build with the defaults rather than fail
+	var sf = get("slide_friction")
+	var bf = get("bearing_friction")
+	var tl = get("track_length")
+	f.store_string(make_urdf(layers, rest_radius,
+			0.5 if tl == null else float(tl),
+			0.5 if sf == null else float(sf),
+			0.002 if bf == null else float(bf)))
 	f.close()
 	# meshes are found under res://robot_art whatever loads the file
 	var cfg := FileAccess.open(path.get_basename() + ".yaml", FileAccess.WRITE)
@@ -64,10 +83,7 @@ func build() -> void:
 		EditorInterface.get_resource_filesystem().scan()
 
 	if joint_controller:
-		var offsets: Dictionary[String, float] = {}
-		for i in range(1, layers + 1):
-			offsets["clampB%d" % i] = rest_radius
-		joint_controller.joint_offsets = offsets
+		joint_controller.joint_offsets = joint_offsets(layers, rest_radius)
 	if arm_rig:
 		arm_rig.set("urdf_file_path", path)
 		arm_rig.set("package_folder", path.get_base_dir())
@@ -75,9 +91,20 @@ func build() -> void:
 			arm_rig.call("load_robot")
 
 
+## Offsets the RobotJointController needs for a robot built with make_urdf(n, r0):
+## clampB<k> reads the true radius, support<k> the true bar slide.
+static func joint_offsets(n: int, r0: float) -> Dictionary[String, float]:
+	var o: Dictionary[String, float] = {}
+	for i in range(1, n + 1):
+		o["clampB%d" % i] = r0
+		o["support%d" % i] = -(i - 1) * r0
+	return o
+
+
 # ---------------------------------------------------------------- URDF text
 
-static func make_urdf(n: int, r0: float, track_len: float = 0.5) -> String:
+static func make_urdf(n: int, r0: float, track_len: float = 0.5,
+		slide_fric: float = 0.5, bearing_fric: float = 0.002) -> String:
 	var top_z := n * LAYER_DROP + PEN_DROP
 	var s := PackedStringArray()
 	s.append('<?xml version="1.0"?>')
@@ -90,7 +117,7 @@ static func make_urdf(n: int, r0: float, track_len: float = 0.5) -> String:
 	s.append(_fixed("gantry_fixed", "world", "bar0", "0 0 %s" % _f(top_z)))
 	s.append(_bar_link("bar0"))
 	for i in range(1, n + 1):
-		s.append(_layer(i, r0, top_z, track_len))
+		s.append(_layer(i, r0, top_z, track_len, slide_fric, bearing_fric))
 	s.append(_fixed("pen_mount", "bar%d" % n, "pen", "0 0 -0.010"))
 	s.append('''  <link name="pen">
 	<visual><origin xyz="0 0 -0.015"/><geometry><box size="0.03 0.03 0.03"/></geometry><material name="orange"/></visual>
@@ -104,7 +131,8 @@ static func make_urdf(n: int, r0: float, track_len: float = 0.5) -> String:
 	return "\n".join(s) + "\n"
 
 
-static func _layer(i: int, r0: float, top_z: float, track_len: float) -> String:
+static func _layer(i: int, r0: float, top_z: float, track_len: float,
+		slide_fric: float, bearing_fric: float) -> String:
 	var s := PackedStringArray()
 	s.append('  <!-- ===== layer %d ===== -->' % i)
 	s.append(_fixed("clampA%d" % i, "bar%d" % (i - 1), "clampA%d" % i, "0 0 0"))
@@ -119,18 +147,20 @@ static func _layer(i: int, r0: float, top_z: float, track_len: float) -> String:
 	else:
 		s.append('''  <joint name="pivot%d" type="continuous">
 	<parent link="clampA%d"/><child link="motor%d"/><origin xyz="0 0 %s" rpy="0 0 %s"/>
-	<axis xyz="0 0 1"/><limit effort="0" velocity="10"/><dynamics friction="0.002" damping="0.0"/>
+	<axis xyz="0 0 1"/><limit effort="0" velocity="10"/><dynamics friction="%s" damping="0.0"/>
 	<mimic joint="joint%d" multiplier="-1" offset="0"/>
-  </joint>''' % [i, i, i, _f(PIVOT_Z), _f(-PI / 2.0), i - 1])
+  </joint>''' % [i, i, i, _f(PIVOT_Z), _f(-PI / 2.0), _f(bearing_fric), i - 1])
 	s.append('''  <link name="motor%d">
 	<visual><geometry><mesh filename="%smotor.stl" scale="0.001 0.001 0.001"/></geometry><material name="dark"/></visual>
 	<collision><origin xyz="0 0 -0.0237"/><geometry><box size="0.040 0.028 0.0304"/></geometry></collision>
 	<collision><origin xyz="0 0 -0.0594"/><geometry><box size="0.0543 0.0543 0.041"/></geometry></collision>
 	<inertial><origin xyz="0.00009 -0.00000 -0.05783"/><mass value="0.2011"/><inertia ixx="9.6019e-05" ixy="-3.2819e-11" ixz="5.4181e-09" iyy="9.6824e-05" iyz="-4.1809e-09" izz="5.7848e-05"/></inertial>
   </link>''' % [i, MESHES])
+	# zero pose: motor i is (i-1)*r0 along +X, so start its bar that far back = centred on the rails
+	var bar_back := -(i - 1) * r0
 	s.append('''  <joint name="support%d" type="prismatic">
-	<parent link="motor%d"/><child link="support%d_bar"/><origin xyz="0 0 0"/><axis xyz="1 0 0"/>
-	<limit lower="%s" upper="%s" effort="0" velocity="1.0"/><dynamics friction="0.5" damping="0.0"/>
+	<parent link="motor%d"/><child link="support%d_bar"/><origin xyz="%s 0 0"/><axis xyz="1 0 0"/>
+	<limit lower="%s" upper="%s" effort="0" velocity="1.0"/><dynamics friction="%s" damping="0.0"/>
   </joint>
   <link name="support%d_bar">
 	<visual><geometry><mesh filename="%ssupport.stl" scale="0.001 0.001 0.001"/></geometry><material name="steel"/></visual>
@@ -138,7 +168,7 @@ static func _layer(i: int, r0: float, top_z: float, track_len: float) -> String:
 	<collision><origin xyz="%s 0 -0.0387"/><geometry><cylinder radius="0.008" length="0.008"/></geometry></collision>
 	<collision><origin xyz="%s 0 -0.0387"/><geometry><cylinder radius="0.008" length="0.008"/></geometry></collision>
 	<inertial><origin xyz="0 0 -0.02559"/><mass value="0.2660"/><inertia ixx="2.4046e-05" ixy="0" ixz="0" iyy="6.1592e-03" iyz="0" izz="6.1560e-03"/></inertial>
-  </link>''' % [i, i, i, _f(-SLIDE_MAX), _f(SLIDE_MAX), i, MESHES, _f(-TRACK_X), _f(TRACK_X)])
+  </link>''' % [i, i, i, _f(bar_back), _f(-SLIDE_MAX - bar_back), _f(SLIDE_MAX - bar_back), _f(slide_fric), i, MESHES, _f(-TRACK_X), _f(TRACK_X)])
 	s.append(_fixed("encoder%d_mount" % i, "motor%d" % i, "encoder%d" % i, "0 0 -0.0479"))
 	s.append('  <link name="encoder%d"><inertial><mass value="0.001"/><inertia ixx="1e-9" ixy="0" ixz="0" iyy="1e-9" iyz="0" izz="1e-9"/></inertial></link>' % i)
 	s.append('''  <joint name="joint%d" type="continuous">

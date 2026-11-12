@@ -1,4 +1,4 @@
-[gd_scene load_steps=281 format=3 uid="uid://df7u8lvb6nooj"]
+[gd_scene load_steps=257 format=3 uid="uid://df7u8lvb6nooj"]
 
 [ext_resource type="Script" uid="uid://c3igv34dt3de3" path="res://camera_3dmove.gd" id="1_0baai"]
 [ext_resource type="Script" uid="uid://m7w8s8612ys7" path="res://varsee.gd" id="1_f6xbj"]
@@ -66,22 +66,6 @@ mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
 
-[sub_resource type="GDScript" id="GDScript_408ef"]
-
-[sub_resource type="Resource" id="Resource_8piux"]
-script = SubResource("GDScript_408ef")
-damping = 0.0
-friction = 0.5
-
-[sub_resource type="GDScript" id="GDScript_k8x3c"]
-
-[sub_resource type="Resource" id="Resource_th603"]
-script = SubResource("GDScript_k8x3c")
-lower = -0.214
-upper = 0.214
-effort = 0.0
-velocity = 1.0
-
 [sub_resource type="Resource" id="Resource_cuaai"]
 script = ExtResource("8_04yja")
 name = "support1"
@@ -94,8 +78,6 @@ axis = Vector3(1, 0, 0)
 mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
-limit = SubResource("Resource_th603")
-dynamics = SubResource("Resource_8piux")
 
 [sub_resource type="Resource" id="Resource_r5h8m"]
 script = ExtResource("8_04yja")
@@ -110,18 +92,6 @@ mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
 
-[sub_resource type="Resource" id="Resource_7l0sk"]
-script = SubResource("GDScript_408ef")
-damping = 0.0
-friction = 0.0
-
-[sub_resource type="Resource" id="Resource_m7mem"]
-script = SubResource("GDScript_k8x3c")
-lower = 0.0
-upper = 0.0
-effort = 0.13
-velocity = 1.0
-
 [sub_resource type="Resource" id="Resource_k25cy"]
 script = ExtResource("8_04yja")
 name = "joint1"
@@ -134,20 +104,6 @@ axis = Vector3(0, 1, 0)
 mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
-limit = SubResource("Resource_m7mem")
-dynamics = SubResource("Resource_7l0sk")
-
-[sub_resource type="Resource" id="Resource_ejva2"]
-script = SubResource("GDScript_408ef")
-damping = 0.5
-friction = 0.0
-
-[sub_resource type="Resource" id="Resource_qb2dd"]
-script = SubResource("GDScript_k8x3c")
-lower = -0.04
-upper = 0.1
-effort = 20.0
-velocity = 0.05
 
 [sub_resource type="Resource" id="Resource_1oser"]
 script = ExtResource("8_04yja")
@@ -161,8 +117,6 @@ axis = Vector3(0, 0, 1)
 mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
-limit = SubResource("Resource_qb2dd")
-dynamics = SubResource("Resource_ejva2")
 
 [sub_resource type="Resource" id="Resource_yfb86"]
 script = ExtResource("8_04yja")
@@ -203,18 +157,6 @@ mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
 
-[sub_resource type="Resource" id="Resource_sx1ag"]
-script = SubResource("GDScript_408ef")
-damping = 0.0
-friction = 0.002
-
-[sub_resource type="Resource" id="Resource_fhpto"]
-script = SubResource("GDScript_k8x3c")
-lower = 0.0
-upper = 0.0
-effort = 0.0
-velocity = 10.0
-
 [sub_resource type="Resource" id="Resource_8wdww"]
 script = ExtResource("8_04yja")
 name = "pivot2"
@@ -227,20 +169,6 @@ axis = Vector3(0, 1, 0)
 mimic_joint = "joint1"
 mimic_multiplier = -1.0
 mimic_offset = 0.0
-limit = SubResource("Resource_fhpto")
-dynamics = SubResource("Resource_sx1ag")
-
-[sub_resource type="Resource" id="Resource_kigti"]
-script = SubResource("GDScript_408ef")
-damping = 0.0
-friction = 0.5
-
-[sub_resource type="Resource" id="Resource_j3b1v"]
-script = SubResource("GDScript_k8x3c")
-lower = -0.214
-upper = 0.214
-effort = 0.0
-velocity = 1.0
 
 [sub_resource type="Resource" id="Resource_jga7c"]
 script = ExtResource("8_04yja")
@@ -248,14 +176,12 @@ name = "support2"
 type = "prismatic"
 parent = "motor2"
 child = "support2_bar"
-origin_xyz = Vector3(0, 0, 0)
+origin_xyz = Vector3(-0.07, 0, 0)
 origin_rpy = Vector3(0, 0, 0)
 axis = Vector3(1, 0, 0)
 mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
-limit = SubResource("Resource_j3b1v")
-dynamics = SubResource("Resource_kigti")
 
 [sub_resource type="Resource" id="Resource_n0jpv"]
 script = ExtResource("8_04yja")
@@ -270,18 +196,6 @@ mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
 
-[sub_resource type="Resource" id="Resource_ddqrg"]
-script = SubResource("GDScript_408ef")
-damping = 0.0
-friction = 0.0
-
-[sub_resource type="Resource" id="Resource_aoe7m"]
-script = SubResource("GDScript_k8x3c")
-lower = 0.0
-upper = 0.0
-effort = 0.13
-velocity = 1.0
-
 [sub_resource type="Resource" id="Resource_xuocl"]
 script = ExtResource("8_04yja")
 name = "joint2"
@@ -294,20 +208,6 @@ axis = Vector3(0, 1, 0)
 mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
-limit = SubResource("Resource_aoe7m")
-dynamics = SubResource("Resource_ddqrg")
-
-[sub_resource type="Resource" id="Resource_vminv"]
-script = SubResource("GDScript_408ef")
-damping = 0.5
-friction = 0.0
-
-[sub_resource type="Resource" id="Resource_oh6kk"]
-script = SubResource("GDScript_k8x3c")
-lower = -0.04
-upper = 0.1
-effort = 20.0
-velocity = 0.05
 
 [sub_resource type="Resource" id="Resource_x8k7r"]
 script = ExtResource("8_04yja")
@@ -321,8 +221,6 @@ axis = Vector3(0, 0, 1)
 mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
-limit = SubResource("Resource_oh6kk")
-dynamics = SubResource("Resource_vminv")
 
 [sub_resource type="Resource" id="Resource_w1l4p"]
 script = ExtResource("8_04yja")
@@ -363,18 +261,6 @@ mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
 
-[sub_resource type="Resource" id="Resource_2wkdl"]
-script = SubResource("GDScript_408ef")
-damping = 0.0
-friction = 0.002
-
-[sub_resource type="Resource" id="Resource_nibki"]
-script = SubResource("GDScript_k8x3c")
-lower = 0.0
-upper = 0.0
-effort = 0.0
-velocity = 10.0
-
 [sub_resource type="Resource" id="Resource_3hdby"]
 script = ExtResource("8_04yja")
 name = "pivot3"
@@ -387,20 +273,6 @@ axis = Vector3(0, 1, 0)
 mimic_joint = "joint2"
 mimic_multiplier = -1.0
 mimic_offset = 0.0
-limit = SubResource("Resource_nibki")
-dynamics = SubResource("Resource_2wkdl")
-
-[sub_resource type="Resource" id="Resource_3ucje"]
-script = SubResource("GDScript_408ef")
-damping = 0.0
-friction = 0.5
-
-[sub_resource type="Resource" id="Resource_r83ip"]
-script = SubResource("GDScript_k8x3c")
-lower = -0.214
-upper = 0.214
-effort = 0.0
-velocity = 1.0
 
 [sub_resource type="Resource" id="Resource_wglgm"]
 script = ExtResource("8_04yja")
@@ -408,14 +280,12 @@ name = "support3"
 type = "prismatic"
 parent = "motor3"
 child = "support3_bar"
-origin_xyz = Vector3(0, 0, 0)
+origin_xyz = Vector3(-0.14, 0, 0)
 origin_rpy = Vector3(0, 0, 0)
 axis = Vector3(1, 0, 0)
 mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
-limit = SubResource("Resource_r83ip")
-dynamics = SubResource("Resource_3ucje")
 
 [sub_resource type="Resource" id="Resource_oqfgn"]
 script = ExtResource("8_04yja")
@@ -430,18 +300,6 @@ mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
 
-[sub_resource type="Resource" id="Resource_jk6q2"]
-script = SubResource("GDScript_408ef")
-damping = 0.0
-friction = 0.0
-
-[sub_resource type="Resource" id="Resource_proep"]
-script = SubResource("GDScript_k8x3c")
-lower = 0.0
-upper = 0.0
-effort = 0.13
-velocity = 1.0
-
 [sub_resource type="Resource" id="Resource_pm5d0"]
 script = ExtResource("8_04yja")
 name = "joint3"
@@ -454,20 +312,6 @@ axis = Vector3(0, 1, 0)
 mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
-limit = SubResource("Resource_proep")
-dynamics = SubResource("Resource_jk6q2")
-
-[sub_resource type="Resource" id="Resource_e84t2"]
-script = SubResource("GDScript_408ef")
-damping = 0.5
-friction = 0.0
-
-[sub_resource type="Resource" id="Resource_2eyyk"]
-script = SubResource("GDScript_k8x3c")
-lower = -0.04
-upper = 0.1
-effort = 20.0
-velocity = 0.05
 
 [sub_resource type="Resource" id="Resource_t4msm"]
 script = ExtResource("8_04yja")
@@ -481,8 +325,6 @@ axis = Vector3(0, 0, 1)
 mimic_joint = ""
 mimic_multiplier = 1.0
 mimic_offset = 0.0
-limit = SubResource("Resource_2eyyk")
-dynamics = SubResource("Resource_e84t2")
 
 [sub_resource type="Resource" id="Resource_x0ta8"]
 script = ExtResource("8_04yja")
@@ -2203,7 +2045,10 @@ script = ExtResource("3_gr7he")
 joint_offsets = Dictionary[String, float]({
 "clampB1": 0.07,
 "clampB2": 0.07,
-"clampB3": 0.07
+"clampB3": 0.07,
+"support1": 0.0,
+"support2": -0.07,
+"support3": -0.14
 })
 
 [node name="ROS2" type="Node" parent="." node_paths=PackedStringArray("robot_controller")]
@@ -2428,7 +2273,7 @@ material_override = SubResource("StandardMaterial3D_gap55")
 mesh = ExtResource("17_va547")
 
 [node name="support2" type="RigidBody3D" parent="ImportRobot/robot_art_3_layers"]
-transform = Transform3D(1, 0, 0, 0, 1, -1.64203e-15, 0, -1.64203e-15, 1, 0.07, 0.3889, 1.03596e-09)
+transform = Transform3D(1, 0, 0, 0, 1, -1.64203e-15, 0, -1.64203e-15, 1, 0, 0.3889, 1.03596e-09)
 mass = 0.266
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, -0.02559, 0)
@@ -2572,7 +2417,7 @@ material_override = SubResource("StandardMaterial3D_r3oje")
 mesh = ExtResource("17_va547")
 
 [node name="support3" type="RigidBody3D" parent="ImportRobot/robot_art_3_layers"]
-transform = Transform3D(1, 0, 0, 0, 1, -1.64203e-15, 0, -1.64203e-15, 1, 0.14, 0.2526, 2.07192e-09)
+transform = Transform3D(1, 0, 0, 0, 1, -1.64203e-15, 0, -1.64203e-15, 1, 0, 0.2526, 2.07192e-09)
 mass = 0.266
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, -0.02559, 0)
@@ -2676,6 +2521,7 @@ mesh = SubResource("BoxMesh_kckxk")
 
 [node name="pen_mount" type="RigidBody3D" parent="ImportRobot/robot_art_3_layers"]
 transform = Transform3D(-4.37114e-08, 4.37114e-08, 1, -4.37114e-08, 1, -4.37114e-08, -1, -4.37114e-08, -4.37114e-08, 0.21, 0.13, 2.50903e-09)
+visible = false
 mass = 0.03
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, -0.04, 0)
@@ -2772,11 +2618,11 @@ joint = SubResource("Resource_8wdww")
 metadata/hinge_axis = "x"
 
 [node name="joint_support2" type="Generic6DOFJoint3D" parent="ImportRobot/robot_art_3_layers"]
-transform = Transform3D(0, 0, 1, 1.64203e-15, 1, 0, -1, -1.64203e-15, 0, 0.07, 0.3889, 1.03596e-09)
+transform = Transform3D(0, 0, 1, 1.64203e-15, 1, 0, -1, -1.64203e-15, 0, 0, 0.3889, 1.03596e-09)
 node_a = NodePath("../pivot2")
 node_b = NodePath("../support2")
-linear_limit_z/upper_distance = 0.214
-linear_limit_z/lower_distance = -0.214
+linear_limit_z/upper_distance = 0.284
+linear_limit_z/lower_distance = -0.144
 linear_motor_z/enabled = true
 linear_motor_z/force_limit = 0.5
 angular_motor_z/enabled = true
@@ -2831,11 +2677,11 @@ joint = SubResource("Resource_3hdby")
 metadata/hinge_axis = "x"
 
 [node name="joint_support3" type="Generic6DOFJoint3D" parent="ImportRobot/robot_art_3_layers"]
-transform = Transform3D(0, 0, 1, 1.64203e-15, 1, 0, -1, -1.64203e-15, 0, 0.14, 0.2526, 2.07192e-09)
+transform = Transform3D(0, 0, 1, 1.64203e-15, 1, 0, -1, -1.64203e-15, 0, 0, 0.2526, 2.07192e-09)
 node_a = NodePath("../pivot3")
 node_b = NodePath("../support3")
-linear_limit_z/upper_distance = 0.214
-linear_limit_z/lower_distance = -0.214
+linear_limit_z/upper_distance = 0.354
+linear_limit_z/lower_distance = -0.074
 linear_motor_z/enabled = true
 linear_motor_z/force_limit = 0.5
 angular_motor_z/enabled = true

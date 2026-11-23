@@ -32,7 +32,7 @@
   </link>
   <joint name="support1" type="prismatic">
 	<parent link="motor1"/><child link="support1_bar"/><origin xyz="0.0 0 0"/><axis xyz="1 0 0"/>
-	<limit lower="-0.214" upper="0.214" effort="0" velocity="1.0"/><dynamics friction="0.5" damping="0.0"/>
+	<limit lower="-0.214" upper="0.214" effort="0" velocity="1.0"/><dynamics friction="0.14" damping="0.0"/>
   </joint>
   <link name="support1_bar">
 	<visual><geometry><mesh filename="package://robot_art_layer/meshes/support.stl" scale="0.001 0.001 0.001"/></geometry><material name="steel"/></visual>
@@ -84,7 +84,7 @@
   </link>
   <joint name="pivot2" type="continuous">
 	<parent link="clampA2"/><child link="motor2"/><origin xyz="0 0 -0.0237" rpy="0 0 -1.57079633"/>
-	<axis xyz="0 0 1"/><limit effort="0" velocity="10"/><dynamics friction="0.002" damping="0.0"/>
+	<axis xyz="0 0 1"/><limit effort="0" velocity="10"/><dynamics friction="0.001" damping="0.0"/>
 	<mimic joint="joint1" multiplier="-1" offset="0"/>
   </joint>
   <link name="motor2">
@@ -95,7 +95,7 @@
   </link>
   <joint name="support2" type="prismatic">
 	<parent link="motor2"/><child link="support2_bar"/><origin xyz="-0.07 0 0"/><axis xyz="1 0 0"/>
-	<limit lower="-0.144" upper="0.284" effort="0" velocity="1.0"/><dynamics friction="0.5" damping="0.0"/>
+	<limit lower="-0.144" upper="0.284" effort="0" velocity="1.0"/><dynamics friction="0.14" damping="0.0"/>
   </joint>
   <link name="support2_bar">
 	<visual><geometry><mesh filename="package://robot_art_layer/meshes/support.stl" scale="0.001 0.001 0.001"/></geometry><material name="steel"/></visual>
@@ -147,7 +147,7 @@
   </link>
   <joint name="pivot3" type="continuous">
 	<parent link="clampA3"/><child link="motor3"/><origin xyz="0 0 -0.0237" rpy="0 0 -1.57079633"/>
-	<axis xyz="0 0 1"/><limit effort="0" velocity="10"/><dynamics friction="0.002" damping="0.0"/>
+	<axis xyz="0 0 1"/><limit effort="0" velocity="10"/><dynamics friction="0.001" damping="0.0"/>
 	<mimic joint="joint2" multiplier="-1" offset="0"/>
   </joint>
   <link name="motor3">
@@ -158,7 +158,7 @@
   </link>
   <joint name="support3" type="prismatic">
 	<parent link="motor3"/><child link="support3_bar"/><origin xyz="-0.14 0 0"/><axis xyz="1 0 0"/>
-	<limit lower="-0.074" upper="0.354" effort="0" velocity="1.0"/><dynamics friction="0.5" damping="0.0"/>
+	<limit lower="-0.074" upper="0.354" effort="0" velocity="1.0"/><dynamics friction="0.14" damping="0.0"/>
   </joint>
   <link name="support3_bar">
 	<visual><geometry><mesh filename="package://robot_art_layer/meshes/support.stl" scale="0.001 0.001 0.001"/></geometry><material name="steel"/></visual>
@@ -202,8 +202,7 @@
   </link>
   <joint name="pen_mount" type="fixed"><parent link="bar3"/><child link="pen"/><origin xyz="0 0 -0.010"/></joint>
   <link name="pen">
-	<visual><origin xyz="0 0 -0.015"/><geometry><box size="0.03 0.03 0.03"/></geometry><material name="orange"/></visual>
-	<visual><origin xyz="0 0 -0.080"/><geometry><cylinder radius="0.005" length="0.100"/></geometry><material name="red"/></visual>
+	<visual><origin xyz="0 0 0.010"/><geometry><mesh filename="package://robot_art_layer/meshes/clampA.stl" scale="0.001 0.001 0.001"/></geometry><material name="orange"/></visual>
 	<collision><origin xyz="0 0 -0.080"/><geometry><cylinder radius="0.005" length="0.100"/></geometry></collision>
 	<inertial><origin xyz="0 0 -0.04"/><mass value="0.03"/><inertia ixx="2e-5" ixy="0" ixz="0" iyy="2e-5" iyz="0" izz="1e-6"/></inertial>
   </link>

@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Mover6Simulation"
+config/name="RobotArt"
 run/main_scene="uid://df7u8lvb6nooj"
 config/features=PackedStringArray("4.4", "Mobile")
 config/icon="res://icon.svg"

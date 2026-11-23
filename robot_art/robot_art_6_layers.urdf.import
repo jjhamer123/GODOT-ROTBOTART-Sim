@@ -1,0 +1,14 @@
+[remap]
+
+importer="godot_urdf"
+type="PackedScene"
+uid="uid://bt6jjh1j5qavw"
+path="res://.godot/imported/robot_art_6_layers.urdf-5311676fcfc6b3ff2b24ddcbc3f47146.tscn"
+
+[deps]
+
+source_file="res://robot_art/robot_art_6_layers.urdf"
+dest_files=["res://.godot/imported/robot_art_6_layers.urdf-5311676fcfc6b3ff2b24ddcbc3f47146.tscn"]
+
+[params]
+

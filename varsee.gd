@@ -1,9 +1,6 @@
 extends CanvasLayer
 class_name SimOverlay
 ## On-screen status + joint table.
-## Robot Art robots (joint1..N / clampB1..N) get one row per layer and the pen
-## position; any other robot (e.g. the Mover6) gets one row per moving joint.
-## The table rebuilds itself when the robot is reloaded with different joints.
 
 #have these point at the ROS2 bridge and the arm controller
 @export var joint_controller: RobotJointController

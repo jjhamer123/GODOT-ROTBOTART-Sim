@@ -22,6 +22,11 @@ enum Mode { SIMULATION, SHADOW }
 ## Topic the real robot publishes its joint states on (read in SHADOW mode)
 @export var shadow_topic: String = "/joint_states"
 
+## Topic for position targets in SIMULATION mode (sensor_msgs/JointState, names +
+## positions). Robot Art: MATLAB's setArmLengths sends clampB1..N here (arm length, m).
+## Joints not in a message keep doing what they were doing. Blank = off.
+@export var set_position_topic: String = "/robot_art/set_positions"
+
 @export var connection_timeout_sec: float = 1.0
 @export var sign_flip := false
 @export var shadow_sign_flip := false
@@ -30,6 +35,7 @@ enum Mode { SIMULATION, SHADOW }
 var jog: JointJogController
 var state_pub: JointStatePublisher
 var state_sub: JointStateSubscriber
+var target_sub: JointStateSubscriber
 var _last_velocities: Dictionary[String, float] = {}
 var _last_command_time_msec: int = -999999
 var _last_shadow_time_msec: int = -999999
@@ -39,6 +45,9 @@ func _ready():
 	state_pub = JointStatePublisher.new()
 	state_sub = JointStateSubscriber.new()
 	state_sub.set_topic(shadow_topic)
+	if set_position_topic != "":
+		target_sub = JointStateSubscriber.new()
+		target_sub.set_topic(set_position_topic)
 
 func toggle_mode() -> void:
 	set_mode(Mode.SHADOW if mode == Mode.SIMULATION else Mode.SIMULATION)
@@ -69,9 +78,12 @@ func _process(_delta):
 	jog.spin_some()
 	state_pub.spin_some()
 	state_sub.spin_some()
+	if target_sub:
+		target_sub.spin_some()
 
 	if mode == Mode.SIMULATION:
 		_handle_jog()
+		_handle_targets()
 		_publish_state()
 	else:
 		_handle_shadow()
@@ -97,6 +109,21 @@ func _handle_jog() -> void:
 
 		robot_controller.set_joint_velocity(names[i], v)
 		_last_velocities[names[i]] = v
+
+## SIMULATION mode: move the named joints to the positions sent on set_position_topic
+## (rad, or m for sliding joints; true values, so clampB = real arm length).
+func _handle_targets() -> void:
+	if not target_sub or not target_sub.has_new_data():
+		return
+	_last_command_time_msec = Time.get_ticks_msec()
+	var names = target_sub.get_joint_names()
+	var positions = target_sub.get_joint_positions()
+	var known := robot_controller.get_joint_names()
+	for i in min(names.size(), positions.size()):
+		if names[i] in known:
+			robot_controller.set_joint_angle(names[i], positions[i])
+		else:
+			push_warning("RosArmBridge: no joint called '%s' (set_position_topic)" % names[i])
 
 func _handle_shadow() -> void:
 	if not state_sub.has_new_data():

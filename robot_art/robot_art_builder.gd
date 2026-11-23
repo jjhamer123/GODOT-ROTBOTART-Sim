@@ -1,18 +1,6 @@
 @tool
 class_name RobotArtBuilder
 extends Node
-## Builds a Robot Art URDF with any number of layers: a fixed gantry bar on top,
-## then layer 1, 2, ... N hanging below it, and the pen at the end of the last arm.
-## Same robot as `xacro epicycle_layers.urdf.xacro layers:=N rest_radius:=0.07`.
-##
-## Use: add this node to your scene, set Layers, point Arm Rig at your ImportRobot
-## (and Joint Controller at your ArmController), then press "Build robot".
-##
-## Every layer is built on its rails: in the URDF's zero pose (all arms pointing
-## +X at Rest Radius) motor k sits (k-1) x Rest Radius from the centre, so its
-## support bar is placed that far back through the carriage, centred between the
-## rails. joint_offsets() tells the controller, so support<k> still reads the true
-## slide (bar centre - carriage centre), the same value as the ROS URDF.
 
 @export_range(1, 10) var layers: int = 3
 ## Length of every layer's guide rails (m), except the top layer's: its motor never
@@ -63,8 +51,7 @@ func build() -> void:
 	if f == null:
 		push_error("RobotArtBuilder: can't write %s (%s)" % [path, error_string(FileAccess.get_open_error())])
 		return
-	# get() + fallback: a node created before these settings existed has them as Nil
-	# until the scene is reloaded, so build with the defaults rather than fail
+
 	var sf = get("slide_friction")
 	var bf = get("bearing_friction")
 	var tl = get("track_length")
@@ -101,8 +88,6 @@ static func joint_offsets(n: int, r0: float) -> Dictionary[String, float]:
 	return o
 
 
-# ---------------------------------------------------------------- URDF text
-
 static func make_urdf(n: int, r0: float, track_len: float = 0.5,
 		slide_fric: float = 0.5, bearing_fric: float = 0.002) -> String:
 	var top_z := n * LAYER_DROP + PEN_DROP
@@ -119,12 +104,12 @@ static func make_urdf(n: int, r0: float, track_len: float = 0.5,
 	for i in range(1, n + 1):
 		s.append(_layer(i, r0, top_z, track_len, slide_fric, bearing_fric))
 	s.append(_fixed("pen_mount", "bar%d" % n, "pen", "0 0 -0.010"))
+	# pen holder: a clamp A on the end of the last arm (the pen itself is a thin line, pen_line.gd)
 	s.append('''  <link name="pen">
-	<visual><origin xyz="0 0 -0.015"/><geometry><box size="0.03 0.03 0.03"/></geometry><material name="orange"/></visual>
-	<visual><origin xyz="0 0 -0.080"/><geometry><cylinder radius="0.005" length="0.100"/></geometry><material name="red"/></visual>
+	<visual><origin xyz="0 0 0.010"/><geometry><mesh filename="%sclampA.stl" scale="0.001 0.001 0.001"/></geometry><material name="orange"/></visual>
 	<collision><origin xyz="0 0 -0.080"/><geometry><cylinder radius="0.005" length="0.100"/></geometry></collision>
 	<inertial><origin xyz="0 0 -0.04"/><mass value="0.03"/><inertia ixx="2e-5" ixy="0" ixz="0" iyy="2e-5" iyz="0" izz="1e-6"/></inertial>
-  </link>''')
+  </link>''' % MESHES)
 	s.append(_fixed("pen_tip_mount", "pen", "pen_tip", "0 0 -0.130"))
 	s.append('  <link name="pen_tip"><inertial><mass value="0.001"/><inertia ixx="1e-9" ixy="0" ixz="0" iyy="1e-9" iyz="0" izz="1e-9"/></inertial></link>')
 	s.append('</robot>')

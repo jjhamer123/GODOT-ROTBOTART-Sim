@@ -106,9 +106,8 @@ func _physics_process(delta: float) -> void:
 		_file.flush()
 	if do_print:
 		_print_timer = 0.0
-		print("END  t=%.2fs  pos=(%.1f, %.1f, %.1f) mm  rpy=(%.1f, %.1f, %.1f) deg" % [
-			_t, p.x * 1000, p.y * 1000, p.z * 1000,
-			rad_to_deg(rpy.x), rad_to_deg(rpy.y), rad_to_deg(rpy.z)])
+		print("END  t=%.2fs  pos=(%.1f, %.1f, %.1f) mm" % [
+			_t, p.x * 1000, p.y * 1000, p.z * 1000])
 
 
 ## Tracked point relative to the robot base, in ROS axes (m).
